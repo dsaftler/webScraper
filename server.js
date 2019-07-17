@@ -1,10 +1,10 @@
-const express = require('epress');
-const logger = require('logger');
+const express = require('express');
+const logger = require('morgan')
 const mongoose = require('mongoose');
 const axios = require('axios');
 const cheerio = require('cheerio');
 const db = require("./models");
-
+const MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/newRebublic";
 const PORT = process.env.PORT || 3000;
 
 const app = express();
@@ -12,9 +12,58 @@ const app = express();
 app.use(logger("dev"));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.user(express.static("public"));
+app.use(express.static("public"));
 
-mongoose.connect("mongodb://localhost/newRepublic", { useNewUrlParser: true });
+mongoose.connect(MONGODB_URI, { useNewUrlParser: true });
+app.get("/scrape", function (req, res) {
+  // First, we grab the body of the html with axios
+  axios.get("https://www.stefanjudis.com/today-i-learned/").then(function (response) {
+    // Then, we load that into cheerio and save it to $ for a shorthand selector
+    var $ = cheerio.load(response.data);
+    console.log('_____________________________');
+       
+    // $("h2")
+    // Now, we grab every h2 within an article tag, and do the following:
+
+    $("li.u-marginBottomSmall").each(function (i, element) {
+
+      var result = {};
+      // result.category = $(this).
+      result.title = $(this)
+        .children("a")
+        .text();
+        // parents.parent.children
+        result.link = $(this)
+        .children("a")
+        .attr("href");
+        console.log(result);
+
+      // Create a new Article using the `result` object built from scraping
+      db.Article.create(result)
+        .then(function (dbArticle) {
+          // View the added result in the console
+          console.log(dbArticle);
+        })
+        .catch(function (err) {
+          // If an error occurred, log it
+          console.log(err);
+        });
+    });
+
+    // Send a message to the client
+    res.send("Scrape Complete");
+  });
+});
+
+app.get("/articles", function(req, res) {
+  db.Article.find({})
+  .then(function(dbArticle) {
+    res.json(dbArticle);
+  })
+  .catch(function(err) {
+    res.json(err);
+  });
+});
 
 app.post("/articles/:id", function (req, res) {
   // Create a new note and pass the req.body to the entry
