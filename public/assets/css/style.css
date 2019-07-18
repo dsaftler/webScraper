@@ -1,0 +1,47 @@
+body {
+  background: url('../image//afrah-UZYpFLc_F7A-unsplash.jpg') repeat;
+  background-size: 600px;
+  font-family: 'Inconsolata', monospace;
+  font-size: 16px;
+  display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  background-color: #fff5c9
+}
+
+main {
+  flex: 1 0 auto;
+}
+footer {
+    background: #F4B844;
+}
+.articleBody {
+  height: 200px;
+  font-size: 20px;
+  overflow-y: scroll;
+  line-height: 150%;
+}
+#btnSignUp {
+  background: #00ACEA;
+}
+#nameComment {
+  font-weight: bold;
+  background: #00EFD1;
+  color: white;
+}
+/* #00EFD1 #F4B844 #FEDB41 */
+/* label focus color */
+.input-field input[type=text]:focus+label {
+  color: #00EFD1;
+}
+
+/* label underline focus color */
+.input-field input[type=text]:focus {
+  border-bottom: 1px solid #00ACEA;
+  box-shadow: 0 1px 0 0 #000;
+}
+
+/* icon prefix focus color */
+.input-field .prefix.active {
+  color: #00ACEA;
+}
